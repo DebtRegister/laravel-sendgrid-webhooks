@@ -94,6 +94,10 @@ class WebhookController extends Controller
             $newEvent->sg_message_id = $event['sg_message_id'];
             $newEvent->payload = $event;
 
+            if(isset($event['sg_machine_open'])) {
+                $newEvent->sg_machine_open = $event['sg_machine_open'];
+            }
+
             if (!empty($event['category'])) {
                 $category = $event['category'];
                 if (gettype($category) === "string") {
