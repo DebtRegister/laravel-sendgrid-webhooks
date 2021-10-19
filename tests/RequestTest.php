@@ -255,6 +255,41 @@ class RequestTest extends Orchestra\Testbench\TestCase
         $this->assertEquals($preWebhookCount, $postWebhookCount, "No new database rows should be created");
     }
 
+
+    public function testAppleMachineOpenEventShouldBeSaved()
+    {
+        $messageId = "14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.1";
+        $category = "wolf facts";
+        $payload = [[
+            "email" => "example@test.com",
+            "timestamp" => 1554728844,
+            "smtp-id" => "<14c5d75ce93.dfd.64b469@ismtpd-555>",
+            "event" => "processed",
+            "category" => $category,
+            "sg_event_id" => "WiiomrqWErazAXdj782fZw==",
+            "sg_message_id" => $messageId,
+            "sg_machine_open" => false
+        ]];
+
+        $preWebhookCount = SendgridWebhookEvent::count();
+        /** @var \Illuminate\Foundation\Testing\TestResponse $result */
+        $result = $this->postJson(
+            'sendgrid/webhook',
+            $payload
+        );
+        
+        $result->assertStatus(200);
+
+        $postWebhookCount = SendgridWebhookEvent::count();
+
+        $this->assertEquals($preWebhookCount + 1, $postWebhookCount);
+
+        $newEvent = SendgridWebhookEvent::where('sg_message_id', $messageId)->first();
+
+        $this->assertEquals(0, $newEvent->sg_machine_open);
+
+    }
+
     protected function getPackageProviders($app)
     {
         return [\LaravelSendgridWebhooks\ServiceProvider::class];
