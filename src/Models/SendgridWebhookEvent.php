@@ -24,11 +24,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SendgridWebhookEvent extends Model
 {
-    protected $dates = ['timestamp'];
-
     protected $casts = [
         'payload' => 'array',
         'categories' => 'array',
+        'timestamp' => 'datetime'
     ];
 
     /*********************************************/
